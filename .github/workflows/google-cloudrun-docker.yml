@@ -51,6 +51,7 @@ on:
 env:
   PROJECT_ID: '${{ secrets.GAR_PROJECT }}'
   GAR_LOCATION: '${{ secrets.GAR_REGION }}'
+  SERVICE: '${{ secrets.GAR_SERVICE }}'
 
 jobs:
   deploy:
