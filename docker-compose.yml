@@ -1,0 +1,37 @@
+version: "3.8"
+services:
+  graphite:
+    container_name: graphite-int
+    image: graphiteapp/graphite-statsd
+    ports:
+      - "8125:8125"
+      - "8126:8126"
+
+  grafana:
+    image: grafana/grafana-enterprise
+    ports:
+      - "8081:3000"
+    environment:
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+    volumes:
+      - ./grafana_data:/var/lib/grafana
+    depends_on:
+      - graphite
+
+  frontend:
+    build:
+      dockerfile: Dockerfile
+    environment:
+      STATSD_HOST: graphite-int
+      STATSD_BUCKET: cat
+      TIFA_CONTRIBUTION_GRAPH_URI: "http://localhost:8081/d-solo/1/test-dash?orgId=1&panelId=1"
+      HOSTNAME: localhost
+    ports:
+      - "8080:8080"
+    depends_on:
+      - grafana
+      - graphite
+
+volumes:
+  grafana_data: {}
